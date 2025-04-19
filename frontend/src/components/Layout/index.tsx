@@ -1,14 +1,18 @@
 import { JSX } from "react";
 import { Outlet } from "react-router";
 import Container from "../Container";
+import Header from "../Header";
 
 function Layout(): JSX.Element {
   return (
-    <main>
-      <Container>
-        <Outlet />
-      </Container>
-    </main>
+    <>
+      <Header />
+      <main>
+        <Container>
+          <Outlet />
+        </Container>
+      </main>
+    </>
   );
 }
 
