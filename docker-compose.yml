@@ -1,0 +1,59 @@
+name: ga
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    container_name: ga-postgres
+    env_file:
+      - ./backend/.env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    volumes:
+      - ./backend/src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ga
+
+  backend:
+    container_name: ga-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ./backend/.env
+    volumes:
+      - ./backend:/app/backend
+      - /app/backend/node_modules
+    networks:
+      - ga
+    ports:
+      - 3001:3001
+    depends_on:
+      - postgres
+
+  frontend:
+    container_name: ga-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ./frontend/.env
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+    networks:
+      - ga
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  ga:
+    driver: bridge
