@@ -3,16 +3,18 @@ import { PaletteOptions } from "@mui/material/styles";
 const PALETTE: PaletteOptions = {
   primary: {
     main: "#faebd7",
+    light: "#ffffff",
   },
   secondary: {
-    main: "#666666",
+    main: "#f0f8ff",
+    light: "#e7bcff",
   },
   background: {
-    default: "#f0f8ff",
-    paper: "#f0f8ff",
+    default: "#2d2d30",
+    paper: "#ffffff",
   },
   text: {
-    primary: "#1C1B1F",
+    primary: "#ffffff",
   },
 };
 

@@ -11,7 +11,10 @@
     "strict": true,
     "resolveJsonModule": true,
     "types": ["node"],
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "paths": {
+      "src/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

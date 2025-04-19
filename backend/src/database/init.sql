@@ -1,0 +1,29 @@
+BEGIN;
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_email ON users(email);
+
+CREATE TABLE IF NOT EXISTS tokens_black_list (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_token ON tokens_black_list(token);
+
+CREATE TABLE IF NOT EXISTS projects (
+    id SERIAL PRIMARY KEY,
+    owner VARCHAR(100) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    stars INT NOT NULL,
+    forks INT NOT NULL,
+    issues INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMIT;

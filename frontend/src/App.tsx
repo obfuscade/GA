@@ -3,16 +3,26 @@ import { Route, Routes } from "react-router";
 import Spinner from "./components/Spinner";
 import { PATH } from "./constants";
 import Layout from "./components/Layout";
+import PublicRoute from "./components/PublicRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Home = lazy(() => import("./pages/Home"));
+const SignIn = lazy(() => import("./pages/SignIn"));
+const SignUp = lazy(() => import("./pages/SignUp"));
 
 function App(): JSX.Element {
   return (
     <Suspense fallback={<Spinner />}>
       <Routes>
         <Route path={PATH.HOME} element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route element={<PublicRoute />}>
+            <Route path={PATH.SIGN_IN} element={<SignIn />} />
+            <Route path={PATH.SIGN_UP} element={<SignUp />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route index element={<Home />} />
+          </Route>
           <Route path={PATH.ALL} element={<NotFound />} />
         </Route>
       </Routes>
