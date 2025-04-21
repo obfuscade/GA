@@ -47,10 +47,36 @@ cp frontend/.env.sample frontend/.env
 cp backend/.env.sample backend/.env
 ```
 
-3. **Start the project using Docker Compose**
+3. Ensure Docker Desktop is running
+
+Before starting the containers, make sure Docker Desktop (or Docker Daemon) is running on your machine.
+
+4. **Start the project using Docker Compose**
 
 ```bash
 docker-compose up --build
+```
+
+---
+
+## 🚀 Wait for Console Output
+
+After starting the project, wait for the following messages in your terminal to confirm the project is running correctly:
+
+```
+ga-backend   | info: Server is running on port: 3001
+ga-frontend  | Compiled successfully!
+ga-frontend  | 
+ga-frontend  | You can now view frontend in the browser.
+ga-frontend  | 
+ga-frontend  |   Local:            http://localhost:3000
+ga-frontend  |   On Your Network:  http://172.21.0.4:3000
+
+ga-frontend  | Note that the development build is not optimized.
+ga-frontend  | To create a production build, use yarn build.
+
+ga-frontend  | webpack compiled successfully
+ga-frontend  | No issues found.
 ```
 
 ---
