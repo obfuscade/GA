@@ -10,4 +10,5 @@ export const Container = styled(Box)({
   margin: "0 auto",
   padding: "0 1.1rem",
   flex: 1,
+  position: "relative",
 });

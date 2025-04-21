@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Theme } from "@mui/material";
+import { Box, Theme } from "@mui/material";
 import { Link as RRLink } from "react-router";
 
 export const Header = styled.header<{ theme?: Theme }>(({ theme }) => ({
@@ -12,14 +12,14 @@ export const Header = styled.header<{ theme?: Theme }>(({ theme }) => ({
   justifyContent: "space-between",
 }));
 
-export const Actions = styled.header({
+export const Actions = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: "1.5rem",
 });
 
 export const Link = styled(RRLink)<{ theme?: Theme }>(({ theme }) => ({
-  color: theme.palette.primary.light,
   display: "block",
+  color: theme.palette.primary.light,
   textDecoration: "none",
 }));

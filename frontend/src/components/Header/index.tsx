@@ -1,46 +1,53 @@
-import { enqueueSnackbar } from "notistack";
-import { signOut } from "../../libs/http/auth";
-import { removeItemStorage } from "../../utils/localStorage";
-import { Context } from "../Root";
-import { JSX, useCallback, useContext } from "react";
+import { JSX, useState } from "react";
 import { Button } from "@mui/material";
 import { LogoDev } from "@mui/icons-material";
 import { PATH } from "../../constants";
+import Modal from "../Modal";
+import { useAppSelector } from "../../hooks/useRedux";
 import * as Styled from "./styles";
+import ProjectForm from "../ProjectForm";
+import useAuth from "../../hooks/useAuth";
 
 function Header(): JSX.Element {
-  const { isUserLogged, setIsGlobalLoading, setIsUserLogged } =
-    useContext(Context);
+  const { handleSignOut, isLoading } = useAuth();
+  const { isLogged } = useAppSelector((state) => state.user);
 
-  const handleLogout = useCallback(async () => {
-    setIsGlobalLoading(true);
+  const [isModal, setIsModal] = useState(false);
 
-    try {
-      await signOut();
-    } catch (error) {
-      const { message = "Error" } = error as Error;
-      enqueueSnackbar(message, { variant: "error" });
-    } finally {
-      removeItemStorage("isLogged");
-      setIsUserLogged(false);
-      setIsGlobalLoading(false);
-    }
-  }, [setIsGlobalLoading, signOut, removeItemStorage, setIsUserLogged]);
+  const handleCloseModal = (): void => {
+    setIsModal(false);
+  };
+
+  const handleOpenModal = (): void => {
+    setIsModal(true);
+  };
 
   return (
-    <Styled.Header>
-      <Styled.Link to={PATH.HOME}>
-        <LogoDev fontSize="large" />
-      </Styled.Link>
+    <>
+      <Styled.Header>
+        <Styled.Link to={PATH.HOME}>
+          <LogoDev fontSize="large" />
+        </Styled.Link>
 
-      {isUserLogged ? (
-        <Styled.Actions>
-          <Button onClick={handleLogout}>New</Button>
+        {isLogged ? (
+          <Styled.Actions>
+            <Button onClick={handleOpenModal}>New Project</Button>
 
-          <Button onClick={handleLogout}>Log out</Button>
-        </Styled.Actions>
-      ) : null}
-    </Styled.Header>
+            <Button onClick={handleSignOut} loading={isLoading}>
+              Log out
+            </Button>
+          </Styled.Actions>
+        ) : null}
+      </Styled.Header>
+
+      <Modal
+        isOpen={isModal}
+        handleClose={handleCloseModal}
+        title="Add a new project"
+      >
+        <ProjectForm handleCloseModal={handleCloseModal} />
+      </Modal>
+    </>
   );
 }
 

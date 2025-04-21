@@ -1,12 +1,12 @@
 import { Navigate, Outlet } from "react-router";
 import { PATH } from "../../constants";
-import { JSX, useContext } from "react";
-import { Context } from "../Root";
+import { JSX } from "react";
+import { useAppSelector } from "../../hooks/useRedux";
 
 function PublicRoute(): JSX.Element {
-  const { isUserLogged } = useContext(Context);
+  const { isLogged } = useAppSelector((state) => state.user);
 
-  return isUserLogged ? <Navigate to={PATH.HOME} replace /> : <Outlet />;
+  return isLogged ? <Navigate to={PATH.HOME} replace /> : <Outlet />;
 }
 
 export default PublicRoute;

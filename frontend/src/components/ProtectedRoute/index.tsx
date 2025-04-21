@@ -1,12 +1,12 @@
-import { JSX, useContext } from "react";
+import { JSX } from "react";
 import { PATH } from "../../constants/";
 import { Navigate, Outlet } from "react-router";
-import { Context } from "../Root";
+import { useAppSelector } from "../../hooks/useRedux";
 
 function ProtectedRoute(): JSX.Element {
-  const { isUserLogged } = useContext(Context);
+  const { isLogged } = useAppSelector((state) => state.user);
 
-  return isUserLogged ? <Outlet /> : <Navigate to={PATH.SIGN_UP} replace />;
+  return isLogged ? <Outlet /> : <Navigate to={PATH.SIGN_UP} replace />;
 }
 
 export default ProtectedRoute;

@@ -9,8 +9,8 @@ class ErrorController {
     error: AppError,
     req: Request,
     res: Response,
-    // eslint-disable-next-line no-unused-vars
-    next: NextFunction,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _: NextFunction,
   ): Response {
     const statusCode = error?.statusCode || 500;
     const message = error?.message || "Internal server error";

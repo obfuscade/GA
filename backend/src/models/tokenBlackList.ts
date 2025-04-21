@@ -1,4 +1,4 @@
-import pool from "src/database/pool";
+import pool from "../database/pool";
 
 class TokenBlackList {
   static async isExists(token: string): Promise<boolean> {
@@ -6,7 +6,8 @@ class TokenBlackList {
       "SELECT id FROM tokens_black_list WHERE token = $1;",
       [token],
     );
-    return rows.length > 0;
+
+    return Boolean(rows.length);
   }
 
   static async create(token: string): Promise<void> {

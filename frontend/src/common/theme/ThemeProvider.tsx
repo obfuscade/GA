@@ -1,11 +1,10 @@
 import { JSX, PropsWithChildren } from "react";
-import { ThemeProvider as MUIThemeProvider } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
-import THEME from ".";
+import { ThemeProvider as MUIThemeProvider, CssBaseline } from "@mui/material";
+import theme from ".";
 
 const ThemeProvider = ({ children }: PropsWithChildren): JSX.Element => {
   return (
-    <MUIThemeProvider theme={THEME}>
+    <MUIThemeProvider theme={theme}>
       <CssBaseline />
       {children}
     </MUIThemeProvider>

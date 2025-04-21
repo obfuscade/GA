@@ -1,31 +1,27 @@
-import { JSX, useCallback, useContext, useMemo, useState } from "react";
+import { JSX, useCallback, useMemo } from "react";
 import { useLocation } from "react-router";
 import { PATH } from "../../constants";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validation, defaultValues } from "./form";
-import { Context } from "../Root";
-import { setItemStorage } from "../../utils/localStorage";
-import { User } from "../../types";
-import { signIn, signUp } from "../../libs/http/auth";
+import { IUser } from "../../types";
 import Input from "../Input";
-import { enqueueSnackbar } from "notistack";
-import * as Styled from "./styles";
 import { Button, Typography } from "@mui/material";
+import * as Styled from "./styles";
+import useAuth from "../../hooks/useAuth";
 
 function Auth(): JSX.Element {
-  const { setIsUserLogged } = useContext(Context);
   const { pathname } = useLocation();
+  const { handleAuth, isLoading } = useAuth();
   const {
     handleSubmit,
     register,
     reset,
     formState: { errors, isValid, isSubmitted },
-  } = useForm<User>({
+  } = useForm<IUser>({
     resolver: yupResolver(validation),
     defaultValues,
   });
-  const [isLoading, setIsLoading] = useState(false);
 
   const isSignUp = useMemo(() => pathname === PATH.SIGN_UP, [pathname]);
 
@@ -34,32 +30,18 @@ function Auth(): JSX.Element {
     [isValid, isLoading, isSubmitted],
   );
 
-  const handleAuthSubmit = useCallback(async () => {
-    setIsLoading(true);
-
-    try {
-      // if (isSignUp) {
-      //   await signUp(data);
-      // } else {
-      //   await signIn(data);
-      // }
-
-      setItemStorage({ key: "isLogged", value: "true" });
-      setIsUserLogged(true);
-      reset();
-    } catch (error) {
-      const { message = "Error" } = error as Error;
-      enqueueSnackbar(message, { variant: "error" });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isSignUp, signUp, signIn, reset, setIsLoading]);
+  const handleSubmitAction = useCallback(
+    async (data: IUser) => {
+      await handleAuth({ data, isSignUp, callback: reset });
+    },
+    [handleAuth, isSignUp, reset],
+  );
 
   return (
     <Styled.Section>
       <Typography variant="h1">{isSignUp ? "Sign Up" : "Sign In"}</Typography>
 
-      <Styled.Form onSubmit={handleSubmit(handleAuthSubmit)}>
+      <Styled.Form onSubmit={handleSubmit(handleSubmitAction)}>
         <Input
           type="email"
           name="email"
@@ -90,15 +72,15 @@ function Auth(): JSX.Element {
         </Button>
       </Styled.Form>
 
-      <Styled.LinkWrapper>
-        <Typography variant="body1">
+      <Styled.ActionsWrapper>
+        <Typography component="p">
           {isSignUp ? "Have an account? " : "New user? "}
         </Typography>
 
         <Styled.Link to={isSignUp ? PATH.SIGN_IN : PATH.SIGN_UP}>
           {isSignUp ? "Sign In" : "Sign Up"}
         </Styled.Link>
-      </Styled.LinkWrapper>
+      </Styled.ActionsWrapper>
     </Styled.Section>
   );
 }

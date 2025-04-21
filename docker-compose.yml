@@ -2,13 +2,11 @@ name: ga
 
 services:
   postgres:
-    image: postgres
+    image: postgres:17-alpine
     restart: always
     container_name: ga-postgres
     env_file:
       - ./backend/.env
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - 5432:5432
     volumes:
@@ -19,11 +17,12 @@ services:
 
   backend:
     container_name: ga-backend
+    restart: unless-stopped
     build:
       context: ./backend
       dockerfile: Dockerfile
-    restart: unless-stopped
-    env_file: ./backend/.env
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app/backend
       - /app/backend/node_modules
@@ -36,11 +35,12 @@ services:
 
   frontend:
     container_name: ga-frontend
+    restart: unless-stopped
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    restart: unless-stopped
-    env_file: ./frontend/.env
+    env_file:
+      - ./frontend/.env
     volumes:
       - ./frontend:/app/frontend
       - /app/frontend/node_modules

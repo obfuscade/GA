@@ -17,13 +17,10 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
     "no-console": "error",
-    "no-undef": "error",
+    "no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/explicit-module-boundary-types": "error",
     "@typescript-eslint/explicit-function-return-type": "error",
-    "@typescript-eslint/no-inferrable-types": 0,
-    "@typescript-eslint/typedef": "error",
-    "quotes": ["error", "double"],
-    "semi": ["error", "always"]
+    "@typescript-eslint/typedef": "error"
   }
 }
