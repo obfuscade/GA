@@ -22,14 +22,11 @@ const COMPONENTS: Components = {
         fontSize: "1rem",
       },
       "#root": {
-        minHeight: "100%",
         display: "flex",
         flexDirection: "column",
-        position: "relative",
       },
       main: {
-        flex: "1 1 auto",
-        position: "relative",
+        height: "100%",
       },
     },
   },

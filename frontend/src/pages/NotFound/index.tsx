@@ -1,6 +1,6 @@
 import { JSX } from "react";
-import * as Styled from "./styles";
 import { Typography } from "@mui/material";
+import * as Styled from "./styles";
 
 function NotFound(): JSX.Element {
   return (

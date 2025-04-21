@@ -1,10 +1,10 @@
 import { JSX, lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
-import Spinner from "./components/Spinner";
 import { PATH } from "./constants";
 import Layout from "./components/Layout";
 import PublicRoute from "./components/PublicRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SpinnerWrapper from "./components/SpinnerWrapper";
 
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Home = lazy(() => import("./pages/Home"));
@@ -13,7 +13,7 @@ const SignUp = lazy(() => import("./pages/SignUp"));
 
 function App(): JSX.Element {
   return (
-    <Suspense fallback={<Spinner />}>
+    <Suspense fallback={<SpinnerWrapper />}>
       <Routes>
         <Route path={PATH.HOME} element={<Layout />}>
           <Route element={<PublicRoute />}>

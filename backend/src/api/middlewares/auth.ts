@@ -1,14 +1,15 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import CookieProvider from "../../providers/cookie";
 import AppError from "../../utils/HttpError";
-import TokenBlackList from "src/models/tokenBlackList";
-import User from "src/models/user";
+import TokenBlackList from "../../models/tokenBlackList";
+import User from "../../models/user";
 import JwtProvider from "../../providers/jwt";
 import catchAsync from "../../utils/catchAsync";
+import { ICustomRequest } from "../../types";
 
 class AuthMiddleware {
   static verify = catchAsync(
-    async (req: Request, _: Response, next: NextFunction) => {
+    async (req: ICustomRequest, _: Response, next: NextFunction) => {
       const token = CookieProvider.get({ req, key: "token" });
 
       // Token not provided
@@ -23,7 +24,6 @@ class AuthMiddleware {
         return next(new AppError("Unauthorized", 401));
       }
 
-      // Decode access token
       const decoded = await JwtProvider.decode(token);
       const isUserExist = await User.getById(decoded.userId);
 

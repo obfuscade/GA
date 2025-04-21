@@ -1,12 +1,12 @@
-import { NextFunction, Request } from "express";
-import User from "src/models/user";
-import CookieProvider from "src/providers/cookie";
-import JwtProvider from "src/providers/jwt";
-import catchAsync from "src/utils/catchAsync";
-import AppError from "src/utils/HttpError";
+import { NextFunction, Request, Response } from "express";
+import User from "../models/user";
+import CookieProvider from "../providers/cookie";
+import JwtProvider from "../providers/jwt";
+import catchAsync from "../utils/catchAsync";
+import AppError from "../utils/HttpError";
 import bcrypt from "bcrypt";
-import config from "src/providers/config";
-import TokenBlackList from "src/models/tokenBlackList";
+import config from "../providers/config";
+import TokenBlackList from "../models/tokenBlackList";
 
 class AuthController {
   private static readonly config = config.get("jwt");
@@ -16,7 +16,7 @@ class AuthController {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return next(new AppError("Please provide correct credentials", 401));
+        return next(new AppError("Please provide correct credentials", 400));
       }
 
       const user = await User.getUserByEmail(email);
@@ -31,7 +31,7 @@ class AuthController {
       );
       const userCreated = await User.create(email, encryptedPassword);
 
-      // Create a token and save in the httpOnly cookie
+      // Create a token and save in a httpOnly cookie
       const token = await JwtProvider.get(userCreated.id);
       CookieProvider.set({
         res,
@@ -45,59 +45,63 @@ class AuthController {
     },
   );
 
-  static signIn = catchAsync(async (req, res, next) => {
-    const { email, password } = req.body;
+  static signIn = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { email, password } = req.body;
 
-    if (!email || !password) {
-      return next(new AppError("Please provide correct credentials", 401));
-    }
+      if (!email || !password) {
+        return next(new AppError("Please provide correct credentials", 400));
+      }
 
-    const user = await User.getUserByEmail(email);
+      const user = await User.getUserByEmail(email);
 
-    if (!user) {
-      return next(new AppError("Please provide correct credentials", 401));
-    }
+      if (!user) {
+        return next(new AppError("Please provide correct credentials", 400));
+      }
 
-    const isPasswordMatched = await bcrypt.compare(password, user.password);
+      const isPasswordMatched = await bcrypt.compare(password, user.password);
 
-    if (!isPasswordMatched) {
-      return next(new AppError("Please provide correct credentials", 401));
-    }
+      if (!isPasswordMatched) {
+        return next(new AppError("Please provide correct credentials", 400));
+      }
 
-    // Create a token and save in the httpOnly cookie
-    const tokenCreated = await JwtProvider.get(user.id);
-    CookieProvider.set({
-      res,
-      key: "token",
-      value: tokenCreated,
-    });
+      // Create a token and save in the httpOnly cookie
+      const tokenCreated = await JwtProvider.get(user.id);
+      CookieProvider.set({
+        res,
+        key: "token",
+        value: tokenCreated,
+      });
 
-    return res.status(201).json({
-      message: "success",
-    });
-  });
+      return res.status(201).json({
+        message: "success",
+      });
+    },
+  );
 
-  static signOut = catchAsync(async (req, res, next) => {
-    const token = CookieProvider.get({
-      req,
-      key: "token",
-    });
+  static signOut = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const token = CookieProvider.get({
+        req,
+        key: "token",
+      });
 
-    if (!token) {
-      return next(new AppError("Unauthorized", 401));
-    }
+      if (!token) {
+        return next(new AppError("Unauthorized", 401));
+      }
 
-    // Save in the black list to not have an access of reattempt request
-    await TokenBlackList.create(token);
-    CookieProvider.delete({
-      res,
-      key: "token",
-    });
+      // Save in the black list to not have an access of reattempt request
+      await TokenBlackList.create(token);
+      CookieProvider.delete({
+        res,
+        key: "token",
+      });
 
-    return res.status(200).json({
-      message: "success",
-    });
-  });
+      return res.status(200).json({
+        message: "success",
+      });
+    },
+  );
 }
 
 export default AuthController;

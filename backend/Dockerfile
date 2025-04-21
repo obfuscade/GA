@@ -1,8 +1,8 @@
-FROM node:latest
+FROM node:20-alpine
 
 WORKDIR /app/backend
 
-COPY package.json ./
+COPY package.json yarn.lock ./
 
 RUN yarn
 

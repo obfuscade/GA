@@ -7,6 +7,7 @@ import authRouter from "./api/routes/auth";
 import { CORS_OPTIONS, LIMIT_OPTIONS } from "./constants";
 import AppError from "./utils/HttpError";
 import ErrorController from "./controllers/error";
+import projectsRouter from "./api/routes/projects";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(compression());
 
 // Routes
 app.use("/auth", authRouter);
+app.use("/projects", projectsRouter);
 
 // 404 Handler
 app.use("*", (req: Request, res: Response, next: NextFunction) => {

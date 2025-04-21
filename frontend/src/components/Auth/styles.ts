@@ -9,7 +9,7 @@ export const Section = styled.section({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  gap: "2rem",
+  gap: "2.5rem",
 });
 
 export const Form = styled.form({
@@ -24,8 +24,7 @@ export const Form = styled.form({
   },
 });
 
-export const LinkWrapper = styled(Box)({
-  fontSize: "1.2rem",
+export const ActionsWrapper = styled(Box)({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -33,7 +32,7 @@ export const LinkWrapper = styled(Box)({
 });
 
 export const Link = styled(RRLink)<{ theme?: Theme }>(({ theme }) => ({
-  color: theme.palette.secondary.light,
   display: "block",
-  textDecoration: "none",
+  fontSize: "1.2rem",
+  color: theme.palette.secondary.light,
 }));

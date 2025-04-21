@@ -1,12 +1,12 @@
-import { User } from "../../types";
+import { IUser } from "../../types";
 import { api } from "../axios";
 import { API_ENDPOINTS } from "../../constants";
 
-export const signIn = async ({ email, password }: User): Promise<void> => {
+export const signIn = async ({ email, password }: IUser): Promise<void> => {
   await api.post(API_ENDPOINTS.SIGNIN, { email, password });
 };
 
-export const signUp = async ({ email, password }: User): Promise<void> => {
+export const signUp = async ({ email, password }: IUser): Promise<void> => {
   await api.post(API_ENDPOINTS.SIGNUP, { email, password });
 };
 

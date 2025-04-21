@@ -19,7 +19,7 @@ type Config = {
   cors: {
     origin: string;
     methods: string[];
-    allowedHeaders: string;
+    allowedHeaders: string[];
     optionsSuccessStatus: number;
   };
 };
@@ -60,7 +60,7 @@ export class ConfigProvider {
     cors: {
       origin: ORIGIN || "",
       methods: (METHODS || "").split(","),
-      allowedHeaders: ALLOWED_HEADERS || "",
+      allowedHeaders: (ALLOWED_HEADERS || "").split(",") || "",
       optionsSuccessStatus: Number(OPTIONS_SUCCESS_STATUS),
     },
   };

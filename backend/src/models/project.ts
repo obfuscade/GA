@@ -1,58 +1,170 @@
-import pool from "src/database/pool";
+import { IProject } from "../types";
+import pool from "../database/pool";
 
-interface Project {
-  owner: string;
-  url: string;
-  stars: number;
-  forks: number;
-  issues: number;
-}
+class Project {
+  static async get({
+    userId,
+    lastItemId,
+    limit,
+  }: {
+    userId: string | null;
+    lastItemId: string | null;
+    limit: number;
+  }): Promise<{ data: Omit<IProject, "userId">[]; hasMore: boolean }> {
+    let query = `
+      SELECT
+        id,
+        owner,
+        name,
+        url,
+        stars,
+        forks,
+        issues,
+        created_at AS "createdAt"
+      FROM
+        projects
+      WHERE
+        user_id = $1`;
 
-interface GetProjectsParams {
-  ownerId: string;
-  lastElementId: string | null;
-  limit: number;
-}
+    // limit + 1 - to determine if there are more projects than the "limit"
+    const params = [userId, limit + 1];
 
-class ProjectService {
-  static async getProjectsKeyset({
-    ownerId,
-    lastElementId = null,
-    limit = 10,
-  }: GetProjectsParams) {
-    let query = `SELECT id, owner, url, stars, forks, issues, createdAt 
-                 FROM projects WHERE owner = $1`;
-
-    if (lastElementId) {
-      query += ` AND id > $2`;
+    if (lastItemId) {
+      query += " AND id > $3";
+      params.push(lastItemId);
     }
 
-    query += ` ORDER BY id ASC LIMIT $3;`;
+    query += " ORDER BY id ASC LIMIT $2;";
 
-    const params = lastElementId
-      ? [ownerId, lastElementId, limit]
-      : [ownerId, limit];
+    const { rows } = await pool.query(query, params);
+    const hasMore = rows.length > limit;
+    // Remove the last item from the results, which was added to check "hasMore" for pagination
+    const data = rows.slice(0, limit);
 
-    const { rows: projects } = await pool.query(query, params);
-
-    const hasMore = projects.length === limit;
-
-    return { projects, hasMore };
+    return { data, hasMore };
   }
 
-  static async createProject({ owner, url, stars, forks, issues }: Project) {
-    return await pool.query(
-      "INSERT INTO projects (owner, url, stars, forks, issues) VALUES ($1, $2, $3, $4, $5);",
-      [owner, url, stars, forks, issues],
-    );
+  static async create({
+    sourceId,
+    userId,
+    owner,
+    url,
+    name,
+    stars,
+    forks,
+    issues,
+    createdAt,
+  }: IProject & { userId: string; sourceId: string }): Promise<IProject> {
+    const query = `
+      INSERT INTO projects
+        (
+          source_id,
+          owner,
+          name,
+          user_id,
+          url,
+          stars,
+          forks,
+          issues,
+          created_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9
+        )
+        RETURNING id, owner, name, url, stars, forks, issues, created_at AS "createdAt";
+    `;
+
+    const { rows } = await pool.query(query, [
+      sourceId,
+      owner,
+      name,
+      userId,
+      url,
+      stars,
+      forks,
+      issues,
+      createdAt,
+    ]);
+
+    return rows[0];
   }
 
-  static async updateProject({ owner, url, stars, forks, issues }: Project) {
-    return await pool.query(
-      "UPDATE projects SET owner = $1, url = $2, stars = $3, forks = $4, issues = $5 WHERE url = $2;",
-      [owner, url, stars, forks, issues],
-    );
+  static async getBySourceId({
+    sourceId,
+    userId,
+  }: {
+    sourceId: string;
+    userId: string | null;
+  }): Promise<IProject> {
+    const query = `
+      SELECT
+        id
+      FROM
+        projects
+      WHERE
+        user_id = $1 AND
+        source_id = $2;
+    `;
+
+    const { rows } = await pool.query(query, [userId, sourceId]);
+
+    return rows[0];
+  }
+
+  static async update({
+    id,
+    owner,
+    url,
+    name,
+    stars,
+    forks,
+    issues,
+  }: IProject): Promise<IProject> {
+    const query = `
+      UPDATE
+        projects
+      SET
+        owner = $2,
+        name = $3,
+        url = $4,
+        stars = $5,
+        forks = $6,
+        issues = $7
+      WHERE
+        id = $1
+      RETURNING id, owner, name, url, stars, forks, issues, created_at AS "createdAt";
+    `;
+
+    const { rows } = await pool.query(query, [
+      id,
+      owner,
+      name,
+      url,
+      stars,
+      forks,
+      issues,
+    ]);
+
+    return rows[0];
+  }
+
+  static async getById(id: string): Promise<IProject> {
+    const query = `
+      SELECT
+        source_id AS "sourceId"
+      FROM
+        projects
+      WHERE
+        id = $1;
+    `;
+
+    const { rows } = await pool.query(query, [id]);
+
+    return rows[0];
+  }
+
+  static async delete(id: string): Promise<void> {
+    await pool.query("DELETE FROM projects WHERE id = $1;", [id]);
   }
 }
 
-export default ProjectService;
+export default Project;

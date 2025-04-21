@@ -1,19 +1,24 @@
-import { Input as MUIInput, FormHelperText, FormControl } from "@mui/material";
-import { UseFormRegister } from "react-hook-form";
-import { User } from "../../types";
+import {
+  Input as MUIInput,
+  FormHelperText,
+  FormControl,
+  TextFieldProps,
+} from "@mui/material";
+import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import { JSX } from "react";
 
-type Props = {
-  name: keyof User;
+type Props<T extends FieldValues> = {
+  name: Path<T>;
   placeholder: string;
-  autocomplete?: "email";
-  type: "text" | "password" | "email";
-  register: UseFormRegister<User>;
+  autocomplete?: TextFieldProps["autoComplete"];
+  type: TextFieldProps["type"];
+  register: UseFormRegister<T>;
   error?: string;
   disabled?: boolean;
+  autofocus?: boolean;
 };
 
-function Input({
+function Input<T extends FieldValues>({
   name,
   placeholder,
   type,
@@ -21,22 +26,19 @@ function Input({
   register,
   disabled,
   autocomplete,
-}: Props): JSX.Element {
+  autofocus,
+}: Props<T>): JSX.Element {
   return (
     <FormControl fullWidth error={!!error} disabled={disabled}>
       <MUIInput
-        size="medium"
-        id={name}
         type={type}
+        size="medium"
         placeholder={placeholder}
-        aria-describedby={error ? `${name}-error` : undefined}
-        aria-invalid={!!error}
-        {...register(name)}
         autoComplete={autocomplete || "off"}
+        autoFocus={autofocus || false}
+        {...register(name)}
       />
-      <FormHelperText id={`${name}-error`} aria-live="polite">
-        {error || " "}
-      </FormHelperText>
+      <FormHelperText>{error || " "}</FormHelperText>
     </FormControl>
   );
 }
